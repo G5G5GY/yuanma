@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuanma.module.system.mapper.AuthPowerApproveFlowMapper">
+
+    <select id="findByCond" resultType="com.yuanma.module.system.model.dto.AuthPowerApproveFlowDto">
+        SELECT
+            a.*
+        FROM
+            sys_auth_power_approve_flow a
+        WHERE
+            1 = 1
+        <if test="null != cond.sstatus ">
+          <foreach collection="cond.sstatus" open=" AND (" close=")" separator=" OR " item="status">
+              status  = #{status}
+          </foreach>
+        </if>
+        <if test="null != cond.title and cond.title !='' ">
+            AND title like concat('%',#{cond.title},'%')
+        </if>
+        <if test="null != cond.flowNo and cond.flowNo !='' ">
+            AND flow_no like concat('%',#{cond.flowNo},'%')
+        </if>
+        <if test="null != cond.userId and cond.userId !='' ">
+            AND create_by  = #{cond.userId}
+        </if>
+        <if test="cond.startDate != null and cond.startDate != ''">
+            <![CDATA[and a.create_time >= DATE_FORMAT(#{cond.startDate},'%Y-%m-%d')]]>
+        </if>
+        <if test="cond.endDate != null and cond.endDate != ''">
+            <![CDATA[and a.create_time <= DATE_FORMAT(concat(#{cond.endDate},' 23:59:59'),'%Y-%m-%d HH24:MI:SS')]]>
+        </if>
+    </select>
+
+    <select id="nextIdByNow" resultType="java.lang.Long">
+        SELECT
+            count(1)+1
+        FROM
+            sys_auth_power_approve_flow a
+        WHERE
+            1 = 1
+        and DATE_FORMAT(a.create_time,'%Y-%m-%d') >= DATE_FORMAT(now(),'%Y-%m-%d')
+    </select>
+
+    <select id="findById" resultType="com.yuanma.module.system.model.dto.AuthPowerApproveFlowDto">
+        SELECT
+            a.*
+        FROM
+            sys_auth_power_approve_flow a
+        WHERE
+            id = #{id}
+
+    </select>
+
+
+</mapper>

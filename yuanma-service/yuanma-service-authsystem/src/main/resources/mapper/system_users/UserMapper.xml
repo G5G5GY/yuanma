@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuanma.module.system.mapper.UserMapper">
+
+    <select id="findByCond" resultType="com.yuanma.module.system.model.dto.UserDto">
+        SELECT
+           a.*,
+            a.user_id as id
+        FROM
+            sys_user a
+        WHERE
+            1 = 1
+            <include refid="whereCondition"></include>
+    </select>
+
+    <select id="queryAll" resultType="com.yuanma.module.system.model.dto.UserDto">
+        SELECT
+            a.*,
+        a.user_id as id
+        FROM
+            sys_user a
+        WHERE
+            1 = 1
+            <include refid="whereCondition"></include>
+    </select>
+
+    <sql id="whereCondition">
+        <if test="null != cond.id and cond.id !='' ">
+            AND user_id = #{cond.id}
+        </if>
+        <if test="null != cond.userIds">
+            <foreach collection="cond.userIds" item="userId" separator="," open=" AND user_id in (" close=")">
+                #{userId}
+            </foreach>
+        </if>
+        <if test="null != cond.deptIds">
+            <foreach collection="cond.deptIds" item="deptId" separator="," open=" AND dept_id in (" close=")">
+                #{deptId}
+            </foreach>
+        </if>
+        <if test="null != cond.blurry and cond.blurry !='' ">
+            AND (email like concat('%',#{cond.blurry},'%') or username like concat('%',#{cond.blurry},'%') or nick_name like concat('%',#{cond.blurry},'%'))
+        </if>
+        <if test="null != cond.enabled and cond.enabled !='' ">
+            AND enabled = #{cond.enabled}
+        </if>
+        <if test="null != cond.deptId and cond.deptId !='' ">
+            AND dept_id = #{cond.deptId}
+        </if>
+        <if test="null != cond.powerEnable and cond.powerEnable">
+            AND power_flag = '0'
+        </if>
+        <if test="cond.startDate != null and cond.startDate != ''">
+            <![CDATA[and a.create_time >= DATE_FORMAT(#{cond.startDate},'%Y-%m-%d')]]>
+        </if>
+        <if test="cond.endDate != null and cond.endDate != ''">
+            <![CDATA[and a.create_time <= DATE_FORMAT(concat(#{cond.endDate},' 23:59:59'),'%Y-%m-%d HH24:MI:SS')]]>
+        </if>
+
+    </sql>
+    
+    <select id="countByDepts" resultType="java.lang.Integer">
+        SELECT count(1) FROM sys_user u WHERE u.dept_id IN
+        <foreach collection="deptIds" item="deptId" separator="," open="  (" close=")">
+            #{deptId}
+        </foreach>
+    </select>
+
+    <select id="countByJobs" resultType="java.lang.Integer">
+        SELECT count(1) FROM sys_user u, sys_users_jobs j WHERE u.user_id = j.user_id AND j.job_id IN
+        <foreach collection="jobIds" item="jobId" separator="," open="  (" close=")">
+            #{jobId}
+        </foreach>
+    </select>
+
+    <select id="countByRoles" resultType="java.lang.Integer">
+        SELECT count(1) FROM sys_user u, sys_users_roles r WHERE u.user_id = r.user_id AND r.role_id in
+        <foreach collection="roleIds" item="roleId" separator="," open="  (" close=")">
+            #{roleId}
+        </foreach>
+    </select>
+
+    <select id="findByRoleId" resultType="com.yuanma.module.system.model.dto.UserDto">
+        SELECT u.*,u.user_id as id FROM sys_user u, sys_users_roles r WHERE u.user_id = r.user_id AND r.role_id = #{userId}
+    </select>
+
+    <update id="updateEmail">
+        update sys_user set email = #{email} where username = #{userName}
+    </update>
+
+    <update id="updateUserName">
+        update sys_user set username = #{userName}  where user_id = #{userId}
+    </update>
+
+    <update id="updatePass">
+        update sys_user set password = #{password},salt=#{salt}, pwd_reset_time = #{lastPasswordResetTime} where username = #{userName}
+    </update>
+
+    <select id="findByUsername" resultType="com.yuanma.module.system.model.dto.UserDto">
+        SELECT
+            a.*,
+            a.user_id as id
+        FROM
+            sys_user a
+        WHERE
+            username = #{userName}
+    </select>
+
+    <select id="findById" resultType="com.yuanma.module.system.model.dto.UserDto">
+        SELECT
+            a.*,
+            a.user_id as id
+        FROM
+            sys_user a
+        WHERE
+            user_id = #{userId}
+    </select>
+
+    <select id="findByEmail" resultType="com.yuanma.module.system.model.dto.UserDto">
+        SELECT
+            a.*,
+            a.user_id as id
+        FROM
+            sys_user a
+        WHERE
+            email = #{email}
+    </select>
+
+    <update id="lock" >
+        update sys_user set unlocked = 0,lock_date = #{lockDate} where username = #{userName}
+    </update>
+
+    <update id="unlock" >
+        update sys_user set unlocked = 1,lock_date = null where username = #{userName}
+    </update>
+
+    <select id="getLockDateByUserName" resultType="java.util.Date">
+        select lock_date from sys_user where username = #{userName}
+    </select>
+
+
+    <update id="updateSignById">
+        update sys_user set sign = #{sign}  where user_id = #{userId}
+    </update>
+</mapper>

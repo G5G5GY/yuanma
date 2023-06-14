@@ -1,0 +1,1 @@
+java -cp druid-1.1.21.jar com.alibaba.druid.filter.config.ConfigTools Yuanma123! > d:/password.txt

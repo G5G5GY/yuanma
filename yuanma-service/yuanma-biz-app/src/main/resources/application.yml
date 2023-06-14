@@ -1,0 +1,18 @@
+server:
+  port: 6061
+spring:
+  application:
+    name: yuanma-service-app
+
+
+auth:
+  system:
+    powerEnable: true
+    strategy: SwxaJCE
+jasypt:
+  encryptor:
+    password: YuanmaInf123.com
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+login:
+  loginCodeEnable: false

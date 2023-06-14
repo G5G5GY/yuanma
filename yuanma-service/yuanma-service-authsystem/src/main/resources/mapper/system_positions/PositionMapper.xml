@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuanma.module.system.mapper.PositionMapper">
+
+    <select id="findByCond" resultType="com.yuanma.module.system.model.dto.PositionDto">
+        SELECT
+            a.*,
+            a.job_id as id
+        FROM
+            sys_job a
+        WHERE
+            1 = 1
+        <if test="null != cond.name and cond.name !='' ">
+            AND name like concat('%',#{cond.name},'%')
+        </if>
+        <if test="null != cond.enabled and cond.enabled !='' ">
+            AND enabled = #{cond.enabled}
+        </if>
+        <if test="cond.startDate != null and cond.startDate != ''">
+            <![CDATA[and a.create_time >= DATE_FORMAT(#{cond.startDate},'%Y-%m-%d')]]>
+        </if>
+        <if test="cond.endDate != null and cond.endDate != ''">
+            <![CDATA[and a.create_time <= DATE_FORMAT(concat(#{cond.endDate},' 23:59:59'),'%Y-%m-%d HH24:MI:SS')]]>
+        </if>
+    </select>
+
+    <select id="findById" resultType="com.yuanma.module.system.model.dto.PositionDto">
+    SELECT
+        a.*,
+        a.job_id as id
+    FROM
+        sys_job a
+    WHERE
+        job_id = #{id}
+    </select>
+
+    <select id="findByName" resultType="com.yuanma.module.system.model.dto.PositionDto">
+        SELECT
+            a.*,
+            a.job_id as id
+        FROM
+            sys_job a
+        WHERE
+            name = #{name}
+    </select>
+
+    <select id="findByUserId" resultType="com.yuanma.module.system.model.dto.PositionDto">
+        SELECT
+            a.*,
+            a.job_id as id
+        FROM
+            sys_job a
+        inner join sys_users_jobs b on a.job_id = b.job_id
+        WHERE
+            b.user_id = #{userId}
+    </select>
+
+
+</mapper>

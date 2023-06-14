@@ -1,0 +1,102 @@
+com:
+  winner:
+    global:
+      swagger:
+        title: ${swagger.title}
+        scanner:
+          - com.yuanma.module.system.controller
+          - com.yuanma.module.log.controller
+          - com.yuanma.module.security.controller
+          - com.yuanma.module.biz.controller
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  data:
+    redis:
+      repositories:
+        enabled: false
+  redis:
+    database: 0
+    host: 192.168.11.25
+    port: 6379
+    #password: Yuanma123!
+    password: ENC(UKRoj/4TXqUNX/1ORUs4zg+dxQCp69Vu)
+    timeout: 5000
+  quartz:
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: clusteredScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: true
+            clusterCheckinInterval: 10000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+    job-store-type: jdbc
+  datasource:
+    druid:
+      #connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      initialSize: 10
+      minIdle: 10
+      maxActive: 25
+      maxWait: 1200
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testOnBorrow: false
+      testOnReturn: false
+      testWhileIdle: true
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filters: stat
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:dm://192.168.11.37:5236
+          #url: jdbc:mysql://192.168.11.37:3306/authsystem_party?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+          #username: root
+          username: AUTHSYSTEM
+          #password: Yuanma123!
+          password: ENC(nJ3msutI/kP+hq5veMcuK0Q1UrBvTOwQ)
+          #driver-class-name: com.mysql.cj.jdbc.Driver
+          driver-class-name: dm.jdbc.driver.DmDriver
+        auth:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:dm://192.168.11.37:5236
+          #url: jdbc:mysql://192.168.11.37:3306/authsystem_party?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+          #username: root
+          username: AUTHSYSTEM
+          #password: Yuanma123!
+          password: ENC(nJ3msutI/kP+hq5veMcuK0Q1UrBvTOwQ)
+          #driver-class-name: com.mysql.cj.jdbc.Driver
+          driver-class-name: dm.jdbc.driver.DmDriver
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    multipleResultSetsEnabled: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-enums-package: com.yuanma.**.entity
+
